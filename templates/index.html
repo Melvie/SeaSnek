@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+th, td {
+    padding: 5px;
+}
+th, td {
+    text-align: center;
+}
+</style>
+
+<!--<form data-bind="submit: addPlant", action="/Plants", method="post">
+Add Plant: <input name="plants" data-bind="value: ko.toJSON(Plants)"></input>
+<button type="submit">Add</button>
+</form>-->
+<table style="width:100">
+    <thead><tr>
+        <th>Plant</th><th>Water Level</th><th>Soil Humidity</th><th></th>
+    </tr></thead>
+    <!-- Todo: Generate table body -->
+    <tbody data-bind="foreach: Plants">
+        <tr>
+            <td>
+                <div data-bind="if:vis">
+                    <div data-bind="text: Name"></div>
+                </div>
+                <div data-bind="ifnot:vis">
+                    <div> <input data-bind ="value: NewName"></div>
+                </div>
+            </td>
+            <td data-bind="text: WaterLevel"></td>
+            <td data-bind="text: Soil "></td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <input type="button" class="btn btn-secondary" data-bind="click: $root.removePlant, value:Remove"/>
+                    <input type="button" class="btn btn-secondary" data-bind="click: $root.editPlant, value:edit"/>
+                </div>
+            </td>
+        </tr>    
+    </tbody>
+</table>
+
+
+<script type="text/javascript " charset="utf-8">
+function PlantModel(data){
+    // var self = this;
+    this.Name = ko.observable(data.Name);
+    this.NewName = ko.observable("")
+    this.WaterLevel = ko.observable(data.WaterLevel);
+    this.Soil = ko.observable(data.Soil);
+    this.vis = ko.observable(true);
+    this.Remove = ko.observable("Remove")
+    this.edit=ko.observable("Edit")
+    this.uri = data.uri;
+    // console.log(data.Name)
+    // self.uri = data.uri;
+
+}
+function PlantsModel(){
+    var self = this;
+    self.PlantsURI = 'http://localhost:5000/Plants';
+    self.Plants = ko.observableArray([])
+
+
+    self.WaterStatus = [
+        {status: "EMPTY"},
+        {status: "LOW"},
+        {status: "MID"},
+        {status: "FULL"}
+    ]
+    self.SoilStatus = [
+        {status:0},
+        {statis: 25},
+        {status: 50},
+        {status: 75},
+        {status: 100}
+    ]
+
+    self.ChangeBut = function(plant){
+        if (plant.vis() == true) {
+            plant.vis(false);
+            plant.edit("Update")
+        } else if (plant.vis() == false) {
+            plant.edit("Edit")
+            plant.vis(true);
+            plant.Name(plant.NewName());
+            self.save(plant);
+        }
+
+    }
+
+    self.editPlant = function(plant){
+        //TODO PUT REQUESTS
+        self.ChangeBut(plant);
+
+    }
+
+    self.addPlant = function(data){
+        self.Plants.push(new PlantModel("",self.SoilStatus[3], self.SoilStatus[0]))
+    }
+
+    self.removePlant = function(plant){self.Plants.destroy(plant)}
+
+    $.getJSON("/Plants", function(allData) {
+        //Server marshals to {plants: mashal(stuff)}, so object is ppassed to client with obj{plants: Array{[num]}, use .plants to break into [obj obj obj.. etc] map can then iterate over it
+
+        var mappedPlants = $.map(allData.plants, function(item) {return new PlantModel(item)});
+
+        self.Plants(mappedPlants);
+
+    });
+
+     self.save = function(plant){
+         self.ajax(plant.uri, "PUT",plant).done()
+    };
+
+    self.ajax = function(uri, method, data) {
+        var request = {
+            url: uri,
+            type: method,
+            contentType: "application/json",
+            accepts: "application/json",
+            cache: false,
+            dataType: 'json',
+            data: ko.toJSON(data)
+        }
+        return $.ajax(request);
+    }
+
+
+
+
+
+
+}
+ko.applyBindings(new PlantsModel());
+
+// </script>
+{%endblock%}
