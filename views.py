@@ -8,21 +8,23 @@ from flask_restful import Resource, Api, fields, marshal, reqparse
 app = Flask(__name__)
 api = Api(app)
 plant_fields = {
-        'Name':fields.String,
-        'WaterLevel': fields.String,
-        'Soil' : fields.String,
-        'uri':fields.Url('plant')
-    }   
+    'Name':fields.String,
+    'WaterLevel': fields.String,
+    'Soil' : fields.String,
+    'uri':fields.Url('plant')
+    }
 
-plants = [{'Name':"Cactus", "WaterLevel":"EMPTY", "Soil":0,'uri':'/Plants/Cactus'},{'Name':"Avacado", "WaterLevel":"MID", "Soil":100,'uri':'/Plants/Avacado'}]
+plants = [{'Name':"Cactus", "WaterLevel":"EMPTY", "Soil":0,'uri':'/Plants/Cactus'},
+{'Name':"Avacado", "WaterLevel":"MID",
+"Soil":100,'uri':'/Plants/Avacado'}]
 
 
 def abort_call(Name):
     if Name not in plants:
         abort(404, message='Plant {} does not exist'.format(Name))
 
-parser = reqparse.RequestParser()
-parser.add_argument("Plant")
+# parser = reqparse.RequestParser()
+# parser.add_argument("Plant")
 
 class Plant(Resource):
 
@@ -36,7 +38,7 @@ class Plant(Resource):
 
 
     def get(self, Name):
-        plant = [plant for plant in plants if plant['Name']==Name].pop()
+        plant = [plant for plant in plants if plant['Name'] == Name].pop()
         # abort_call(plant)
         if plant:
             return {'plant':marshal(plant, plant_fields)}
@@ -48,15 +50,15 @@ class Plant(Resource):
         args = self.reqparse.parse_args()
         print(request.json)
         print("Args: {}".format(args))
-        plant_change = [plant for plant in plants if plant['Name']== Name].pop()
+        plant_change = [plant for plant in plants if plant['Name'] == Name].pop()
         if plant_change:
             for plant in plants:
                 if plant['Name'] == Name:
                     del plants[plants.index(plant)]
 
             plant = {'Name':args['Name'],
-                    'WaterLevel': args['WaterLevel'],
-                    'Soil': args['Soil'], 'uri':"/Plants/{}".format(args['Name'])}
+                     'WaterLevel': args['WaterLevel'],
+                     'Soil': args['Soil'], 'uri':"/Plants/{}".format(args['Name'])}
 
             plants.append(plant)
 
@@ -96,7 +98,10 @@ class PlantList(Resource):
     def post(self):
         args = self.reqparse.parse_args()
 
-        plant = {"Name":args['Name'], "WaterLevel":args['WaterLevel'], "Soil":args['Soil'], 'uri':"/Plants/{}".format(args['Name'])}
+        plant = {"Name":args['Name'],
+                 "WaterLevel":args['WaterLevel'],
+                 "Soil":args['Soil'],
+                 'uri':"/Plants/{}".format(args['Name'])}
 
         plants.append(plant)
 
