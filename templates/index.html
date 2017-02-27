@@ -98,7 +98,7 @@ function PlantsModel(){
     self.addPlant = function(data){
         self.Plants.push(new PlantModel("",self.SoilStatus[3], self.SoilStatus[0]))
     }
-
+    //TODO MAKE SURE IT IS DELETED SERVER SIDE
     self.removePlant = function(plant){self.Plants.destroy(plant)}
 
     $.getJSON("/Plants", function(allData) {

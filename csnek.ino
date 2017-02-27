@@ -32,8 +32,6 @@ void setup() {
     Serial.println("Starting wifi setup.");
     createAP();
 
-    if 
-
 }
 
 void createAP(void){
@@ -55,7 +53,6 @@ void launchserver(void){
 void loop() {
     server.handleClient();
 
-  
 }
 
 void connect2home(){
@@ -64,7 +61,6 @@ void connect2home(){
     //Connect to home!
     return;
   }
-  
 }
 
 int testconnection(){
@@ -105,7 +101,7 @@ void setSSID(){
     WritetoEEPROM(password,33);
     Serial.println(ssid);
     Serial.println(password);
-    
+
     server.send(204,"");
 
 }
