@@ -25,7 +25,7 @@ Add Plant: <input name="plants" data-bind="value: ko.toJSON(Plants)"></input>
                     <div data-bind="text: Name"></div>
                 </div>
                 <div data-bind="ifnot:vis">
-                    <div> <input data-bind ="value: NewName"></div>
+                    <div> <input data-bind ="value: Name"></div>
                 </div>
             </td>
             <td data-bind="text: WaterLevel"></td>
@@ -45,7 +45,7 @@ Add Plant: <input name="plants" data-bind="value: ko.toJSON(Plants)"></input>
 function PlantModel(data){
     // var self = this;
     this.Name = ko.observable(data.Name);
-    this.NewName = ko.observable("")
+    //this.NewName = ko.observable("")
     this.WaterLevel = ko.observable(data.WaterLevel);
     this.Soil = ko.observable(data.Soil);
     this.Serial_num = data.Serial_num;
@@ -82,7 +82,7 @@ function PlantsModel(){
         } else if (plant.vis() == false) {
             plant.edit("Edit")
             plant.vis(true); 
-            plant.Name(plant.NewName());
+            //plant.Name();
             self.save(plant);
         }
 
@@ -98,7 +98,7 @@ function PlantsModel(){
         self.Plants.push(new PlantModel("",self.SoilStatus[3], self.SoilStatus[0]))
     }
     //TODO MAKE SURE IT IS DELETED SERVER SIDE
-    self.removePlant = function(plant){self.Plants.destroy(plant)}
+    self.removePlant = function(plant){self.delete(plant)}
 
     $.getJSON("/Plants", function(allData) {
         //Server marshals to {plants: mashal(stuff)}, so object is ppassed to client with obj{plants: Array{[num]}, use .plants to break into [obj obj obj.. etc] map can then iterate over it
@@ -110,14 +110,17 @@ function PlantsModel(){
     });
 
      self.save = function(plant){
+         console.log(plant);
          self.ajax(plant.uri, "PUT",plant).done()
     };
 
     self.delete = function(plant){
         self.ajax(plant.uri, "DELETE", plant).done()
+        self.Plants.destroy(plant);
     }
 
     self.ajax = function(uri, method, data) {
+        console.log(data)
         var request = {
             url: uri,
             type: method,

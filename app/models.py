@@ -16,7 +16,7 @@ class User(db.Model):
 class Plant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     Serial_num = db.Column(db.Integer, index=True, unique=True)
-    name = db.Column(db.String(64), index=True)
+    name = db.Column(db.String(64), index=True, unique=True)
     WaterLevel = db.Column(db.String(64), index=True)
     Soil = db.Column(db.Integer, index=True)
     uri = db.Column(db.String(64), index=True)
@@ -29,5 +29,5 @@ class Plant(db.Model):
     def todict(self):
         #ignores user_id for now
 
-        return {'Name':self.name, 'Serial_#':self.Serial_num, 'WaterLevel':self.WaterLevel, 'Soil':self.Soil, 'uri':self.uri}
+        return {'Name':self.name, 'Serial_num':self.Serial_num, 'WaterLevel':self.WaterLevel, 'Soil':self.Soil, 'uri':self.uri}
 
