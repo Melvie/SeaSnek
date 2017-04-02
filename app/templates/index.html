@@ -62,7 +62,6 @@ function PlantsModel(){
     self.PlantsURI = 'http://localhost:5000/Plants';
     self.Plants = ko.observableArray([])
 
-
     self.WaterStatus = [
         {status: "EMPTY"},
         {status: "FULL"},
@@ -100,6 +99,7 @@ function PlantsModel(){
     //TODO MAKE SURE IT IS DELETED SERVER SIDE
     self.removePlant = function(plant){self.delete(plant)}
 
+
     $.getJSON("/Plants", function(allData) {
         //Server marshals to {plants: mashal(stuff)}, so object is ppassed to client with obj{plants: Array{[num]}, use .plants to break into [obj obj obj.. etc] map can then iterate over it
 
@@ -108,8 +108,20 @@ function PlantsModel(){
         self.Plants(mappedPlants);
 
     });
+    
+    self.update = function(allData){
+        $.getJSON("/Plants", function(allData) {
+            //Server marshals to {plants: mashal(stuff)}, so object is ppassed to client with obj{plants: Array{[num]}, use .plants to break into [obj obj obj.. etc] map can then iterate over it
 
-     self.save = function(plant){
+            var mappedPlants = $.map(allData.plants, function(item) {return new PlantModel(item)});
+
+            self.Plants(mappedPlants);
+
+        });
+    }
+
+
+    self.save = function(plant){
          console.log(plant);
          self.ajax(plant.uri, "PUT",plant).done()
     };
@@ -139,7 +151,10 @@ function PlantsModel(){
 
 
 }
-ko.applyBindings(new PlantsModel());
+var PlantsModel = new PlantsModel();
+window.setInterval(PlantsModel.update, 50000);
+ko.applyBindings(PlantsModel);
+
 
 // </script>
 {%endblock%}

@@ -83,10 +83,12 @@ class Plant(Resource):
 
 
     def delete(self, Name):
+        args = self.reqparse.parse_args()
+        print (args)
 
         # plant = [plant for plant in plants if plant['Name'] == Name].pop()
-        plant = models.Plant.query.filter(models.Plant.name==Name).first()
-
+        # plant = models.Plant.query.filter(models.Plant.name==Name).first()
+        plant = 0;
         if plant:
             db.session.delete(plant)
             db.session.commit()
