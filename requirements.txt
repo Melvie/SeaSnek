@@ -1,6 +1,4 @@
 aniso8601==1.2.0
-apparmor==2.10.95
-apparmor.click==0.3.13.1
 apt-xapian-index==0.47
 apturl==0.5.2
 astroid==1.4.9
