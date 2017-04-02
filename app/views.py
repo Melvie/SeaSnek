@@ -4,6 +4,7 @@ from app import api, db, app, models
 from uuid import uuid4
 from flask import Flask, render_template, request, redirect, jsonify, abort
 from flask_restful import Resource, Api, fields, marshal, reqparse
+from sqlalchemy import exists
 
 
 # app = Flask(__name__)
@@ -16,6 +17,7 @@ plant_fields = {
     'uri':fields.Url('plant')
     }
 parser = reqparse.RequestParser()
+owner = models.User.query.first()
 # plants = [{'Name':"Cactus", "WaterLevel":"EMPTY", "Soil":0,'uri':'/Plants/Cactus', 'Serial_#':1},
 # {'Name':"Avacado", "WaterLevel":"FULL",
 # "Soil":100, 'uri':'/Plants/Avacado','Serial_#':2}]
@@ -87,7 +89,7 @@ class Plant(Resource):
         print (args)
 
         # plant = [plant for plant in plants if plant['Name'] == Name].pop()
-        # plant = models.Plant.query.filter(models.Plant.name==Name).first()
+        plant = models.Plant.query.filter(models.Plant.Serial_num==args['Serial_num']).first()
         plant = 0;
         if plant:
             db.session.delete(plant)
@@ -121,22 +123,26 @@ class PlantList(Resource):
 
 
     def post(self):
-        args = parser.parse_args()
+        args = self.reqparse.parse_args()
         print(args)
         # args = self.reqparse.parse_args()
         # print("Args: {}".fromat(args))
-        plant = models.Plant(Name=args['Name'],
+        plant = models.Plant(name=args['Name'],
                              Serial_num=args['Serial_num'],
                              WaterLevel=args['WaterLevel'],
                              Soil=args['Soil'],
-                             uri="/Plants/{}".format(args['Name']))
-        print(plant)
+                             uri="/Plants/{}".format(args['Name']),
+                             owner=owner)
+        print(plant.Serial_num)
+        # ret = models.Plant.query(exists(), where(models.Plant.Serial_num==plant.Serial_num)).scalar()
+        ret = db.session.query(exists().where(models.Plant.Serial_num==args['Serial_num'])).scalar()
+        print(ret)
 
-        if plant in models.Plant.query.all():
+        if ret:
             return {"response":"Plant already exists"}, 208
 
         else:
-            db.sesison.add(plant)
+            db.session.add(plant)
             db.session.commit()
 
         return {'plants': marshal(plant.todict(), plant_fields)}, 201
