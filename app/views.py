@@ -18,6 +18,8 @@ plant_fields = {
     }
 parser = reqparse.RequestParser()
 owner = models.User.query.first()
+
+# print(owner)
 # plants = [{'Name':"Cactus", "WaterLevel":"EMPTY", "Soil":0,'uri':'/Plants/Cactus', 'Serial_#':1},
 # {'Name':"Avacado", "WaterLevel":"FULL",
 # "Soil":100, 'uri':'/Plants/Avacado','Serial_#':2}]
