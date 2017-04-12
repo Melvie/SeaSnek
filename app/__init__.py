@@ -10,6 +10,6 @@ db = SQLAlchemy(app)
 api = Api(app)
 
 
-from app import views, models
+# from app import views, models
 
 
